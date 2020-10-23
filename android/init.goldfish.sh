@@ -1,8 +1,10 @@
 #!/system/bin/sh
 
 # Setup networking when boot starts
-ifconfig eth0 10.0.2.15 netmask 255.255.255.0 up
-route add default gw 10.0.2.2 dev eth0
+ifconfig eth0 192.168.250.2 netmask 255.255.255.0 up
+ip route add default dev eth0 via 192.168.250.1
+ip rule add pref 32766 table main
+ip rule add pref 32767 table local
 
 # ro.kernel.android.qemud is normally set when we
 # want the RIL (radio interface layer) to talk to
@@ -36,19 +38,19 @@ case "$qemud" in
     ;;
 esac
 
-# Setup additionnal DNS servers if needed
-num_dns=`getprop ro.kernel.ndns`
-case "$num_dns" in
-    2) setprop net.eth0.dns2 10.0.2.4
-       ;;
-    3) setprop net.eth0.dns2 10.0.2.4
-       setprop net.eth0.dns3 10.0.2.5
-       ;;
-    4) setprop net.eth0.dns2 10.0.2.4
-       setprop net.eth0.dns3 10.0.2.5
-       setprop net.eth0.dns4 10.0.2.6
-       ;;
-esac
+## Setup additionnal DNS servers if needed
+#num_dns=`getprop ro.kernel.ndns`
+#case "$num_dns" in
+#    2) setprop net.eth0.dns2 10.0.2.4
+#       ;;
+#    3) setprop net.eth0.dns2 10.0.2.4
+#       setprop net.eth0.dns3 10.0.2.5
+#       ;;
+#    4) setprop net.eth0.dns2 10.0.2.4
+#       setprop net.eth0.dns3 10.0.2.5
+#       setprop net.eth0.dns4 10.0.2.6
+#       ;;
+#esac
 
 # disable boot animation for a faster boot sequence when needed
 boot_anim=`getprop ro.kernel.android.bootanim`
@@ -57,12 +59,12 @@ case "$boot_anim" in
     ;;
 esac
 
-# set up the second interface (for inter-emulator connections)
-# if required
-my_ip=`getprop net.shared_net_ip`
-case "$my_ip" in
-    "")
-    ;;
-    *) ifconfig eth1 "$my_ip" netmask 255.255.255.0 up
-    ;;
-esac
+## set up the second interface (for inter-emulator connections)
+## if required
+#my_ip=`getprop net.shared_net_ip`
+#case "$my_ip" in
+#    "")
+#    ;;
+#    *) ifconfig eth1 "$my_ip" netmask 255.255.255.0 up
+#    ;;
+#esac
